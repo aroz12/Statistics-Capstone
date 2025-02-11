@@ -1,0 +1,208 @@
+---
+title: "Vdem"
+author: "Lucca"
+date: "2025-01-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+#Don't forget to install vdem package, mice, and tidyverse:
+#devtools::install_github("vdeminstitute/vdemdata")
+
+```{r}
+library(tidyverse)
+library(vdemdata)
+
+#read in dataset, using fill_vars to carry foward election specific variables
+
+#PLEASE NOTE fill_vars STILL LEAVES NA VALUES FOR BREAKS IN ELECTORAL REGIME. DURING THESE TIMES, VARIABLES SHOULD BE EQUAL TO A THEORETICAL MINIMUM, BUT THERE ISN'T A CLEAR WAY TO DO THIS WITH LATENT VARIABLE ESTIMATES.
+
+vdemcsv<-fill_vars()
+
+#rescaleFreedomHouse variable 
+
+vdemcsv$rescaled<-(as.numeric(vdemcsv$e_fh_pr)+as.numeric(vdemcsv$e_fh_cl))/2
+
+#filter out irrelevant variable versions
+
+vdemcsv<-vdemcsv[,!(grepl("_osp|_ord|_codelow|_codehigh|_mean|v2x|v3|_sd|_mean",names(vdemcsv)))] 
+#isolate number of coders and create NAs for variables without minimum number of coders
+
+coders<-vdemcsv[,grepl("_nr",names(vdemcsv))]
+a<-data.frame(rown=1:length(vdemcsv$country_name))
+for(i in 1:length(names(coders))){
+vect<-pull(coders[,i])
+vect<-ifelse(is.na(vect),0,vect)
+
+#Set minimum number of coders allowable
+
+a[,i]<-as.logical(vect>=1) 
+names(a)[i]<-substr(names(coders)[i],1,nchar(names(coders)[i])-3)
+}
+
+#every variable listed in falseindf has a naming scheme that in some way does not align with the conventions of the rest of the Vdem naming scheme. This is usually because the variable is composed of many binary variables. While these dichotomous variables are important, individually they add little information, and they are not intuitive or interesting to visualize.
+
+d<-c()
+for(i in 1:length(names(a))){
+d[i]<-names(a)[i]%in%names(vdemcsv)
+}
+false_indices <- which(!d)
+falseindf<-names(a)[false_indices]
+a<-a[,-false_indices]
+
+#We also do not want to include text variables, or variables whose number response is actually indicative of a factor in the codebook. Ex. A response of 5 means "The Military" rather than 5. In effect, we want variables whose responses are either in interval form or converted to interval by the measurement model. 
+
+
+for(i in 1:length(names(a))){
+vartype[i]<-var_info(names(a)[i])[13]
+}
+vartype<-unlist(vartype)
+vartype<-tolower(vartype)
+a<-a[,grepl("interval",vartype)]
+
+#Some NAs are meant to be set to NA because another variable in the dataset has a certain value. In the Vdem codebook, this information is contained in cleaning details in the format "Set to missing where v2regint is 0." but there is inconsistent language, grammar, and punctuation used in the codebook. We want to clean the codebook entries to isolate the variable name that needs to be checked (eg. v2regint in the above example) and the value that it needs to be checked for (eg. 0).
+
+ordering<-c()
+cleaning<-c()
+for(i in 1:length(names(a))){
+cleaning[i]<-var_info(names(a)[i])[36]
+}
+cleaning<-unlist(cleaning)
+cleaning
+contingent<-rep(NA,length.out=length(cleaning))
+
+  v_index[i]<- regexpr("v", cleaning[i], ignore.case = TRUE)
+
+for (i in 1:length(cleaning)) {
+  v_index<- regexpr("v", cleaning[i], ignore.case = TRUE)
+  if (!is.na(v_index)) {
+    space_index <- regexpr("\\s", substr(cleaning[i], v_index, nchar(cleaning[i])))
+    if (is.na(space_index)) {
+      contingent[i] <- substr(cleaning[i], v_index, nchar(cleaning[i]))
+    } else {
+      contingent[i] <- substr(cleaning[i], v_index, v_index + space_index - 2)
+    }
+  }
+}
+
+
+checkvalue<- as.numeric(gsub("[^0-9]", "", substr(cleaning, nchar(cleaning) - 2, nchar(cleaning))))
+
+truenas<-data.frame(column=names(a),variable=contingent, value=checkvalue)
+truenas<-truenas%>%filter(!is.na(variable))%>%filter(!(column=="juhcind"|column=="juhccomp"))
+
+#truenas is a dataset that tells you which columns in the dataframe it should default to NA when "variable"="value"
+```
+
+Now we want to reconstruct the Vdem dataset, with NAs for variables with insufficient coders and only the columns of interest and country-year combos. 
+
+```{r}
+#We add in population and gdp per capita as controls for our imputation process. Assumption is that data is missing at random after controlling for these factors.
+slim<-data.frame(e_pop=vdemcsv$e_pop,e_gdppc=vdemcsv$e_gdppc,rescaled=vdemcsv$rescaled,year=vdemcsv$year,country_id=vdemcsv$country_id)
+for(i in 1:length(names(a))){
+ayy<-pull(vdemcsv[,names(vdemcsv)%in%names(a)[i]])
+Bee<-a[,i]
+vdemcsv[,names(vdemcsv)==names(a)[i]]<-ifelse(Bee==FALSE,NA,ayy)
+}
+slimlength<-length(slim)
+for(i in 1:length(names(a))){
+slim[,i+slimlength]<-pull(vdemcsv[,names(vdemcsv)%in%names(a)[i]])
+names(slim)[i+slimlength]<-names(a)[i]
+}
+
+#filter for after 1972. That's when freedomhouse designations started. 
+slim<-slim[slim$year>=1972,]
+vdemcsv<-vdemcsv[vdemcsv$year>=1972,]
+vdemcsv$v2elffelrbin_ord<-vdem$v2elffelr_ord[vdem$year>=1972]
+
+#removing variables with convergence issues for country date latent trait estimates v2smgovsmalt v2smforads v2caconmob v2peapssoc
+
+badvariables<-c("v2smgovsmalt","v2smforads", "v2caconmob", "v2peapssoc")
+slim<-slim[,!(names(slim)%in%badvariables)]
+
+#need to create a where variable so we don't impute for NAs by design
+wheredf<-is.na(slim)
+for(i in 1:length(truenas)){
+vectora<-drop(wheredf[,colnames(wheredf)%in%truenas$column[i]])
+vectorb<-pull(vdemcsv[,names(vdemcsv)%in%truenas$variable[i]])
+vectorc<-ifelse(is.na(vectorb),TRUE,ifelse(vectorb==truenas$value[i],FALSE,vectora))
+wheredf[,names(slim)%in%truenas$column[i]]<-vectorc
+}
+
+```
+
+```{r}
+#eliminating variables with more than 1000 NAs
+notapplic<-data.frame(variablename=colnames(wheredf),numberofNAs=apply(wheredf,2,function(x) sum((x))))
+wheredf<-wheredf[,!notapplic$numberofNAs>1000]
+slim<-slim[,notapplic$numberofNAs<=1000]
+sapply(slim[,6:length(slim)],function(x) min(x,na.rm=T))
+
+#created a list with maximum and minimum bounds for the imputation process
+boundsdf1<-data.frame(names=names(slim)[6:length(slim)],min=rep(-5,length.out=(length(slim)-slimlength)),max=rep(5,length.out=(length(slim)-slimlength)))
+exceptions<-ifelse(sapply(slim[,6:length(slim)],function(x) max(x,na.rm=T))>5,TRUE,FALSE)
+boundsdf1$max<-ifelse(exceptions==TRUE,100,5)
+boundsdf1$min<-ifelse(exceptions==TRUE,0,-5)
+boundsdfpivot<-t(boundsdf1[,2:3])
+colnames(boundsdfpivot)<-boundsdf1$names
+boundsdfpivot<-data.frame(boundsdfpivot)
+boundsdf<-as.list(boundsdfpivot)
+```
+
+```{r}
+#imputation station
+library(mice)
+#Any character variables used in MICE must be made factors first. 
+slim$country_id<-as.factor(slim$country_id)
+imputationstation<- mice(slim, m=5, maxit = 5,where=wheredf, bounds=boundsdf,print =  TRUE)
+
+
+```
+
+#eliminating variables with more than 1000 NAs
+notapplic<-data.frame(variablename=names(sapply(slim,function(x) sum(is.na(x)))),numberofNAs=sapply(slim,function(x) sum(is.na(x))))
+slim<-slim[,!notapplic$numberofNAs>1000]
+
+check<-apply(slimrecent,1,function(x) sum(is.na(x)))
+slimrecent$totalNAs<-check
+NAbycountry<-slimrecent[ ,names(slimrecent)=="country_name"]
+NAyear<-slimrecent[ ,names(slimrecent)=="year"]
+NAbycountry<-cbind(NAbycountry,NAyear,check)
+aggregated<-aggregate(check~country_name,data=NAbycountry,FUN=mean)
+?sapply
+slimmer<-slimrecent[,24:length(names(slimrecent))]
+newnotapplic<-data.frame(variablename=names(sapply(newslim,function(x) sum(is.na(x)))),numberofNAs=sapply(newslim,function(x) sum(is.na(x))))
+slimmest<-newslim[,names(newslim)[newnotapplic$numberofNAs<1000]]
+head(data.new)
+questions<-c(0)
+for(i in 1:length(names(slimmest))){
+questions[i]<-var_info(names(slimmest)[1:i])[9]
+}
+vdem_codebook
+infocheck<-var_info("v2elrgstry")
+?fill_vars
+f<-data.frame(a=unlist(infocheck))
+
+f$row<-row(f)
+
+
+
+```{r}
+#removing highly correlated
+cormatrix<-cor(apply(slimrecent[,24:length(names(slimrecent))],2,FUN=function(x) as.numeric(x)),use="pairwise.complete.obs")
+cormatrix[upper.tri(cormatrix)]<-0
+diag(cormatrix)<-0
+newslim <- slimmer[, !apply(cormatrix, 2, function(x) any(abs(x) > .7, na.rm = TRUE))]
+
+```
+
+names(vdemcsv)
+getOption("max.print")
+options(max.print(5000)))
