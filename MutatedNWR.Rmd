@@ -1,0 +1,101 @@
+---
+title: "Mutate National WR"
+author: "Alex Ortiz"
+date: '2025-02-14'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(readr)
+library(zoo)
+library(forecast)
+library(tidyverse)
+```
+
+
+```{r}
+
+
+NWR_N <- read.csv("/Users/alexortiz/Downloads/WRP_national.csv")
+
+
+
+interpolate_NWR <- function(National_data) {
+
+  National_data <- National_data[order(National_data$year), ]
+  
+  
+  if (nrow(National_data) < 2) {
+    return(National_data)
+  }
+  
+  years <- seq(min(National_data$year), max(National_data$year), by = 1)
+  
+  newtable <- data.frame(
+    year = years,
+    state = National_data$state[1],
+    name = National_data$name[1]
+  )
+  
+  
+  col_order <- names(National_data)[sapply(National_data, is.numeric)]
+  col_order <- setdiff(col_order, c("year", "state"))
+  
+ 
+  for(col in col_order) {
+    
+    temp_df <- National_data[, c("year", col)]
+    
+    
+    non_na_count <- sum(!is.na(temp_df[[col]]))
+    
+    if (non_na_count >= 2) {
+      
+      interpolated_values <- approx(x = temp_df$year,
+                                  y = temp_df[[col]],
+                                  xout = years,
+                                  method = "linear",
+                                  rule = 1)$y   
+    } else {
+  
+      interpolated_values <- rep(NA, length(years))
+    }
+    
+    newtable[[col]] <- interpolated_values
+  }
+  
+  c_cols <- names(National_data)[!sapply(National_data, is.numeric)]
+  c_cols <- setdiff(c_cols, "name")  
+  for(col in c_cols) {
+    
+    newtable[[col]] <- National_data[[col]][1]
+  }
+  
+  return(newtable)
+}
+
+
+mutated_NWR <- NWR_N %>%
+  group_by(state) %>%
+  group_split() %>%
+  lapply(interpolate_NWR) %>%
+  bind_rows()
+
+
+mutated_NWR <- mutated_NWR %>%
+  arrange(state, year)
+
+mutated_NWR
+
+```
+
+```{r}
+
+write.csv(mutated_NWR, "/Users/alexortiz/Downloads/WRP_national_interpolated.csv", row.names = FALSE)
+
+
+```
+
