@@ -1,13 +1,7 @@
 library(shiny)
 
-# Load your dataset here. For example:
 imp <- read_csv("/Users/alecasillas/Desktop/COURSES/STA4930/datasets/imputed.csv")
 
-
-# Load your dataset here. For example:
-# imp <- read.csv("path/to/imp.csv")
-
-# Fit a linear regression model predicting the rescaled score from the ten features.
 model <- lm(rescaled ~ e_gdppc + v2eldonate + v2elpubfin + v2elembaut +
               v2elrgpwr + v2ellocpwr + v2psbars + v2exrescon +
               v2cltort + v2caautmob, data = imp)
@@ -19,43 +13,43 @@ ui <- fluidPage(
       selectInput("country", "Select Country:", choices = unique(imp$country_name)),
       selectInput("year", "Select Year:", choices = unique(imp$year)),
       br(),
-      sliderInput("e_gdppc", "GDP per Capita (e_gdppc):",
+      sliderInput("e_gdppc", "GDP per Capita:",
                   min = min(imp$e_gdppc, na.rm = TRUE),
                   max = max(imp$e_gdppc, na.rm = TRUE),
                   value = mean(imp$e_gdppc, na.rm = TRUE)),
-      sliderInput("v2eldonate", "v2eldonate:",
+      sliderInput("v2eldonate", "Disclosure of Campaign Donations:",
                   min = min(imp$v2eldonate, na.rm = TRUE),
                   max = max(imp$v2eldonate, na.rm = TRUE),
                   value = mean(imp$v2eldonate, na.rm = TRUE)),
-      sliderInput("v2elpubfin", "v2elpubfin:",
+      sliderInput("v2elpubfin", "Public Campaign Finance:",
                   min = min(imp$v2elpubfin, na.rm = TRUE),
                   max = max(imp$v2elpubfin, na.rm = TRUE),
                   value = mean(imp$v2elpubfin, na.rm = TRUE)),
-      sliderInput("v2elembaut", "v2elembaut:",
+      sliderInput("v2elembaut", "EMB Autonomy:",
                   min = min(imp$v2elembaut, na.rm = TRUE),
                   max = max(imp$v2elembaut, na.rm = TRUE),
                   value = mean(imp$v2elembaut, na.rm = TRUE)),
-      sliderInput("v2elrgpwr", "v2elrgpwr:",
+      sliderInput("v2elrgpwr", "Regional Offices Relative Power:",
                   min = min(imp$v2elrgpwr, na.rm = TRUE),
                   max = max(imp$v2elrgpwr, na.rm = TRUE),
                   value = mean(imp$v2elrgpwr, na.rm = TRUE)),
-      sliderInput("v2ellocpwr", "v2ellocpwr:",
+      sliderInput("v2ellocpwr", "Local Offices Relative Power:",
                   min = min(imp$v2ellocpwr, na.rm = TRUE),
                   max = max(imp$v2ellocpwr, na.rm = TRUE),
                   value = mean(imp$v2ellocpwr, na.rm = TRUE)),
-      sliderInput("v2psbars", "v2psbars:",
+      sliderInput("v2psbars", "Barriers to Parties:",
                   min = min(imp$v2psbars, na.rm = TRUE),
                   max = max(imp$v2psbars, na.rm = TRUE),
                   value = mean(imp$v2psbars, na.rm = TRUE)),
-      sliderInput("v2exrescon", "v2exrescon:",
+      sliderInput("v2exrescon", "Executive Respects Constitution:",
                   min = min(imp$v2exrescon, na.rm = TRUE),
                   max = max(imp$v2exrescon, na.rm = TRUE),
                   value = mean(imp$v2exrescon, na.rm = TRUE)),
-      sliderInput("v2cltort", "v2cltort:",
+      sliderInput("v2cltort", "Freedom From Torture:",
                   min = min(imp$v2cltort, na.rm = TRUE),
                   max = max(imp$v2cltort, na.rm = TRUE),
                   value = mean(imp$v2cltort, na.rm = TRUE)),
-      sliderInput("v2caautmob", "v2caautmob:",
+      sliderInput("v2caautmob", "Mobilization for Autocracy:",
                   min = min(imp$v2caautmob, na.rm = TRUE),
                   max = max(imp$v2caautmob, na.rm = TRUE),
                   value = mean(imp$v2caautmob, na.rm = TRUE))
@@ -68,8 +62,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  
-  # Reactive to extract the original row based on the selected country and year.
+
   original_data <- reactive({
     req(input$country, input$year)
     selected <- subset(imp, country_name == input$country & year == input$year)
@@ -79,8 +72,7 @@ server <- function(input, output, session) {
       return(NULL)
     }
   })
-  
-  # Update slider defaults based on the selected country and year.
+
   observeEvent({
     input$country
     input$year
@@ -98,7 +90,6 @@ server <- function(input, output, session) {
     updateSliderInput(session, "v2caautmob", value = original_data()$v2caautmob)
   })
   
-  # Reactive data frame from the slider inputs.
   new_data <- reactive({
     data.frame(
       e_gdppc = input$e_gdppc,
@@ -113,13 +104,11 @@ server <- function(input, output, session) {
       v2caautmob = input$v2caautmob
     )
   })
-  
-  # Reactive prediction using the current slider inputs.
+
   predicted_score <- reactive({
     predict(model, newdata = new_data())
   })
-  
-  # Display the original score from the dataset and the adjusted score.
+
   output$predScore <- renderPrint({
     req(original_data())
     original <- original_data()$rescaled
