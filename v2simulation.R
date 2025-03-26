@@ -7,7 +7,7 @@ model <- lm(rescaled ~ e_gdppc + v2eldonate + v2elpubfin + v2elembaut +
               v2cltort + v2caautmob, data = imp)
 
 ui <- fluidPage(
-  titlePanel("Rescaled Feature Score Simulation"),
+  titlePanel("Policy Feature Score Simulation"),
   sidebarLayout(
     sidebarPanel(
       selectInput("country", "Select Country:", choices = unique(imp$country_name)),
