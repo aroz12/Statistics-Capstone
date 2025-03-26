@@ -1,6 +1,6 @@
 library(shiny)
 
-imp <- read_csv("/Users/alecasillas/Desktop/COURSES/STA4930/datasets/imputed.csv")
+imp <- read_csv("imputed_cn.csv")
 
 model <- lm(rescaled ~ e_gdppc + v2eldonate + v2elpubfin + v2elembaut +
               v2elrgpwr + v2ellocpwr + v2psbars + v2exrescon +
