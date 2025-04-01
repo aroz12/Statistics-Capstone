@@ -3,17 +3,26 @@ library(plotly)
 library(readr)
 
 # Load the data
-imp <- read_csv("capstone_data.csv")
+imp <- read_csv("imputed_cn.csv")
+region_map <- read_csv("continents2.csv")
 
-# Get column names, excluding columns 1, 3, 4, and 6
-valid_columns <- colnames(imp)[6:200]
+imp$region <- sapply(imp$country_name, function(x) {
+  region_map$region[which(region_map$name == x)]
+})
+# Map regions
+imp$region <- factor(imp$region, levels = c("Asia", "Europe", "Africa", "Americas", "Oceania"))
+
+# List selections
+valid_columns <- list("e_pop", "e_gdppc", "v2eldonate", "v2elpubfin", "v2elembaut", "v2elrgpwr", "v2ellocpwr", "v2psbars", "v2exrescon", "v2cltort", "v2caautmob")
+names(valid_columns) <- c("Population", "GDP per Capita", "Disclosure of Campaign Donations", "Public Campaign Finance", "Electoral Management Body Autonomy", "Regional Offices Relative Power", "Local Offices Relative Power", "Barriers to Parties", "Executive Respects Constitution", "Freedom From Torture", "Mobilization for Autocracy")
+
 
 ui <- fluidPage(
-  titlePanel("Bubble Chart for Country Data"),
+  titlePanel("Multi-Feature Relationships Animation Visualization"),
   sidebarLayout(
     sidebarPanel(
-      selectInput("x_var", "Select X-axis variable:", choices = valid_columns),  # Exclude specific columns
-      selectInput("y_var", "Select Y-axis variable:", choices = valid_columns),
+      selectInput("x_var", "Select X-axis variable:", choices = valid_columns[valid_columns != c("e_pop", "e_gdppc")]),  # Exclude specific columns
+      selectInput("y_var", "Select Y-axis variable:", choices = valid_columns[valid_columns != c("e_pop", "e_gdppc")]),
       selectInput("size_var", "Select Bubble Size variable:", choices = valid_columns),
       # Single year slider with animation
       sliderInput("year", "Select Year:",
@@ -28,7 +37,6 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  
   # Reactive expression to filter data based on the selected year
   filtered_data <- reactive({
     req(input$year)  # Ensure year is selected
@@ -49,12 +57,12 @@ server <- function(input, output, session) {
             x = ~data[[input$x_var]],  # Use double brackets to reference the column dynamically
             y = ~data[[input$y_var]],
             size = ~data[[input$size_var]],
-            color = ~data$country_name,  # Color by country_name
+            color = ~data$region,  # Color by region
             type = "scatter",
             mode = "markers",
             text = ~paste("Country:", country_name, "<br>Year:", year),
             marker = list(sizemode = 'diameter', opacity = 0.5, line = list(width = 0.5, color = "white"))) %>%
-      layout(title = "Bubble Chart of Country Data",
+      layout(title = "Interactive Bubble Chart: Explore Relationships Between Highlighted Features",
              xaxis = list(title = input$x_var),
              yaxis = list(title = input$y_var))
   })
