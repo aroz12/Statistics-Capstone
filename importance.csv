@@ -1,0 +1,160 @@
+varname,importance,question
+e_pop,65.59239341038752,NA
+e_gdppc,167.77379487865582,NA
+year,110.70540460786349,Four--digit designation of the year for which an observation is given that ranges from the start to the end of the coding period.
+v2eldonate,17.50501713069145,Are there disclosure requirements for donations to national election campaigns?
+v2elpubfin,12.335302170381262,Is significant public financing available for parties' and/or candidates' campaigns for national office?
+v2elembaut,869.3478410492949,Does the Election Management Body (EMB) have autonomy from government to apply election laws and administrative rules impartially in national elections?
+v2elembcap,32.09159378238538,Does the Election Management Body (EMB) have sufficient staff and resources to administer a well-run national election?
+v2ellocpwr,33.801834930748214,"How would you characterize the relative power, in practice, of elected and non-elected offices at the local level?"
+v2elsnlsff,15.309667329032456,Does the freeness and fairness of subnational elections vary across different areas of the country?
+v2psbars,2450.309252956283,How restrictive are the barriers to forming a party?
+v2psparban,656.3976270693528,Are any parties banned?
+v2psoppaut,3529.5314913658403,Are opposition parties independent and autonomous of the ruling regime?
+v2psorgs,32.384170790578025,How many political parties for national-level office have permanent organizations?
+v2psprbrch,15.170746725655293,How many parties have permanent local party branches?
+v2psprlnks,13.285487103637939,"Among the major parties, what is the main or most common form of linkage to their constituents?"
+v2psplats,42.028385833229514,How many political parties with representation in the national legislature or presidency have publicly available party platforms (manifestos) that are publicized and relatively distinct from one another?
+v2pscnslnl,19.49381495663527,How centralized is legislative candidate selection within the parties?
+v2pscohesv,16.02388129575915,Is it normal for members of the legislature to vote with other members of their party on important bills?
+v2pscomprg,15.31204000232213,Which of the following best describes the nature of electoral support for major parties (those gaining over 10 % of the vote)?
+v2psnatpar,14.190139288387932,How unified is party control of the national government?
+v2pssunpar,18.834698718223382,Does a single party control important policymaking bodies across subnational units (regional and local governments)?
+v2exremhsp,18.450163673808266,"If the legislature, or either chamber of the legislature, took actions to remove the head of state from office, would it be likely to succeed even without having to level accusations of unlawful activity and without the involvement of any other agency?"
+v2exdfdshs,24.548243412422902,"If the head of state took actions to dissolve the legislature, would he/she be likely to succeed?"
+v2exdfcbhs,12.206557039709693,"In practice, does the head of state have the power to appoint --- or is the approval of the head of state necessary for the appointment of --- cabinet ministers?"
+v2exdfvths,11.911375462889254,"If the head of state took actions to veto a piece of legislation, would he/she be likely to succeed?"
+v2exdfdmhs,10.678589881411234,"If the head of state took actions to dismiss cabinet ministers, would he/she be likely to succeed?"
+v2exdfpphs,15.472681623669104,"Does the head of state have the capacity, in practice, to propose legislation?"
+v2exrescon,130.8591088068248,"Do members of the executive (the head of state, the head of government, and cabinet ministers) respect the constitution?"
+v2exbribe,20.44908983226557,"How routinely do members of the executive (the head of state, the head of government, and cabinet ministers), or their agents, grant favors in exchange for bribes, kickbacks, or other material inducements?"
+v2exembez,201.62551436013973,"How often do members of the executive (the head of state, the head of government, and cabinet ministers), or their agents, steal, embezzle, or misappropriate public funds or other state resources for personal or family use?"
+v2excrptps,68.26176215678593,"How routinely do public sector employees grant favors in exchange for bribes, kickbacks, or other material inducements?"
+v2exthftps,152.24824217300252,"How often do public sector employees steal, embezzle, or misappropriate public funds or other state resources for personal or family use?"
+v2regsupgroupssize,17.874365185337144,"In total, how large is the percentage share of the domestic adult (18+) population that belongs to the political regime’s supporting groups?"
+v2regoppgroupssize,23.78048452209222,"In total, how large is the share of the domestic adult (18+) population that are noteworthy opposition actors to the current political regime?"
+v2lgqstexp,17.478227805880685,"In practice, does the legislature routinely question executive branch officials?"
+v2lginvstp,16.166417140397854,"If the executive were engaged in unconstitutional, illegal, or unethical activity, how likely is it that a legislative body (perhaps a whole chamber, perhaps a committee, whether aligned with government or opposition) would conduct an investigation that would result in a decision or report that is unfavorable to the executive?"
+v2lgotovst,21.927047611585625,"If executive branch officials were engaged in unconstitutional, illegal, or unethical activity, how likely is it that a body other than the legislature, such as a comptroller general, general prosecutor, or ombudsman, would question or investigate them and issue an unfavorable decision or report?"
+v2lgoppart,93.82728965373697,Are opposition parties (those not in the ruling party or coalition) able to exercise oversight and investigatory functions against the wishes of the governing party or coalition?
+v2lgfunds,22.599658806967454,"In practice, does the legislature control the resources that finance its own internal operations and the perquisites of its members?"
+v2lgdsadlobin,13.804554786334648,Are there disadvantaged groups in the society?
+v2lglegplo,17.9685887808307,"In practice, is the approval of the lower (or unicameral) chamber of the legislature required to pass legislation?"
+v2lgcomslo,21.61373671698657,Does the lower (or unicameral) chamber of the legislature have a functioning committee system?
+v2lgsrvlo,13.788035881204872,"In practice, are members of the lower (or unicameral) chamber of the legislature able to serve simultaneously as ministers in the government?"
+v2lgstafflo,16.67522961540784,Does each member of the lower (or unicameral) chamber of the legislature have at least one staff member with policy expertise?
+v2dlreason,23.57778486228564,"When important policy changes are being considered, i.e. before a decision has been made, to what extent do political elites give public and reasoned justifications for their positions?"
+v2dlcommon,18.992361337448795,"When important policy changes are being considered, to what extent do political elites justify their positions in terms of the common good?"
+v2dlcountr,24.578218887501123,"When important policy changes are being considered, to what extent do political elites acknowledge and respect counterarguments?"
+v2dlconslt,25.090672724463804,"When important policy changes are being considered, how wide is the range of consultation at elite levels?"
+v2dlengage,22.556891184122435,"When important policy changes are being considered, how wide and how independent are public deliberations?"
+v2dlencmps,16.534673231842945,"Considering the profile of social and infrastructural spending in the national budget, how ""particularistic"" or ""public goods"" are most expenditures?"
+v2dlunivl,18.446383947628917,How many welfare programs are means-tested and how many benefit all (or virtually all) members of the polity?
+v2jureform,20.424367348399176,Were the judiciary's formal powers altered this year in ways that affect its ability to control the arbitrary use of state authority?
+v2jupurge,34.024281560368756,"Judges are sometimes removed from their posts for cause, as when there is strong evidence of corruption; however, some judges are removed arbitrarily, typically for political reasons. With this distinction in mind, please describe the removal of judges that occurred this calendar year."
+v2jupoatck,19.578722751832213,How often did the government attack the judiciary's integrity in public?
+v2juaccnt,24.24112623195242,"When judges are found responsible for serious misconduct, how often are they removed from their posts or otherwise disciplined?"
+v2juhcind,41.87726102862302,"When the high court in the judicial system is ruling in cases that are salient to the government, how often would you say that it makes decisions that merely reflect government wishes regardless of its sincere view of the legal record?"
+v2juncind,42.19193287928956,"When judges not on the high court are ruling in cases that are salient to the government, how often would you say that their decisions merely reflect government wishes regardless of their sincere view of the legal record?"
+v2juhccomp,118.0401069641883,How often would you say the government complies with important decisions of the high court with which it disagrees?
+v2jucomp,45.909689953641056,How often would you say the government complies with important decisions by other courts with which it disagrees?
+v2jureview,23.84350198015765,"Does any court in the judiciary have the legal authority to invalidate governmental policies (e.g. statutes, regulations, decrees, administrative actions) on the grounds that they violate a constitutional provision?"
+v2cltort,158.301157458922,Is there freedom from torture?
+v2clkill,189.48640569382698,Is there freedom from political killings?
+v2clslavem,11.857142286219963,Are adult men free from servitude and other kinds of forced labor?
+v2clslavef,14.520098052109224,Are adult women free from servitude and other kinds of forced labor?
+v2cltrnslw,70.80762657877382,"Are the laws of the land clear, well publicized, coherent (consistent with each other), relatively stable from year to year, and enforced in a predictable manner?"
+v2clrspct,98.05212768621523,Are public officials rigorous and impartial in the performance of their duties?
+v2clacjstm,601.6500724559188,Do men enjoy secure and effective access to justice?
+v2clacjstw,219.3400176178039,"Do women enjoy equal, secure, and effective access to justice?"
+v2clacjust,12.958122576977678,Do poor people enjoy the same level of civil liberties as rich people do?
+v2clsocgrp,15.354591326199477,"Do all social groups, as distinguished by language, ethnicity, religion, race, region, or caste, enjoy the same level of civil liberties, or are some groups generally in a more favorable position?"
+v2clrgunev,11.492036296575918,Does government respect for civil liberties vary across different areas of the country?
+v2clsnlpct,18.087357668380296,What percentage (%) of the total population of the country lives in the areas where government officials' respect for civil liberties is significantly weaker than the country average?
+v2cldiscm,1066.5591809596706,Are men able to openly discuss political issues in private homes and in public spaces?
+v2cldiscw,97.13349740995608,Are women able to openly discuss political issues in private homes and in public spaces?
+v2clacfree,113.22046615208473,Is there academic freedom and freedom of cultural expression related to political issues?
+v2clrelig,33.346432287393704,Is there freedom of religion?
+v2clfmove,211.16687292038833,Is there freedom of foreign travel and emigration?
+v2cldmovem,28.398784115256344,Do men enjoy freedom of movement within the country?
+v2cldmovew,16.616561036822358,Do women enjoy freedom of movement within the country?
+v2clstown,52.131216883861065,Does the state own or directly control important sectors of the economy?
+v2clprptym,29.47815852626017,Do men enjoy the right to private property?
+v2clprptyw,30.450119221176667,Do women enjoy the right to private property?
+v2svdomaut,20.919582168592765,Is the state autonomous from the control of other states with respect to the conduct of domestic policy?
+v2svinlaut,14.173990249711323,Is the state autonomous from the control of other states with respect to the conduct of its foreign policy?
+v2svstterr,38.24577204477759,Over what percentage (%) of the territory does the state have effective control?
+v2cseeorgs,614.9098039425161,To what extent does the government achieve control over entry and exit by civil society organizations (CSOs) into public life?
+v2cscnsult,24.789555710180437,Are major civil society organizations (CSOs) routinely consulted by policymakers on policies relevant to their members?
+v2csprtcpt,41.944768335594226,Which of these best describes the involvement of people in civil society organizations (CSOs)?
+v2csgender,14.262184504140217,Are women prevented from participating in civil society organizations (CSOs)?
+v2csantimv,21.651866692697965,"Among civil society organizations, are there anti-system opposition movements?"
+v2csrlgrep,89.82447516069124,Does the government attempt to repress religious organizations?
+v2csrlgcon,36.39276049360794,Are major religious organizations routinely consulted by policymakers on policies relevant to their members?
+v2mecenefm,449.01051237159385,Does the government directly or indirectly attempt to censor the print or broadcast media?
+v2mecrit,255.66662131929033,"Of the major print and broadcast outlets, how many routinely criticize the government?"
+v2merange,67.8645950202109,Do the major print and broadcast media represent a wide range of political perspectives?
+v2mefemjrn,17.7582830354802,Please estimate the percentage (%) of journalists in the print and broadcast media who are women.
+v2meharjrn,322.1851204748354,"Are individual journalists harassed --- i.e., threatened with libel, arrested, imprisoned, beaten, or killed --- by governmental or powerful nongovernmental actors while engaged in legitimate journalistic activities?"
+v2meslfcen,58.848474771006686,Is there self-censorship among journalists when reporting on issues that the government considers politically sensitive?
+v2mebias,324.95871016229825,Is there media bias against opposition parties or candidates?
+v2mecorrpt,45.93334765183095,"Do journalists, publishers, or broadcasters accept payments in exchange for altering news coverage?"
+v2pepwrses,18.69929464284455,Is political power distributed according to socioeconomic position?
+v2pepwrsoc,13.469587847769988,Is political power distributed according to social groups?
+v2pepwrgen,14.715736277777689,Is political power distributed according to gender?
+v2pepwrort,15.848707234441223,To what extent is political power distributed according to sexual orientation?
+v2peedueq,25.14195769571945,"To what extent is high quality basic education guaranteed to all, sufficient to enable them to exercise their basic rights as adult citizens?"
+v2pehealth,15.778357262748075,"To what extent is high quality basic healthcare guaranteed to all, sufficient to enable them to exercise their basic political rights as adult citizens?"
+v2peapsecon,14.860617604904641,"Is access to basic public services, such as order and security, primary education, clean water, and healthcare, distributed equally according to socioeconomic position?"
+v2peasjsoecon,12.451190468834383,Are state jobs equally open to qualified individuals regardless of socio-economic position?
+v2peasbecon,13.37563462914108,Are state business opportunities equally available to qualified individuals regardless of socio-economic position?
+v2clgencl,17.307552195418655,Do women enjoy the same level of civil liberties as men?
+v2peapsgen,16.433756397397897,"Is access to basic public services, such as order and security, primary education, clean water, and healthcare, distributed equally according to gender?"
+v2peasjgen,13.512279650128656,Are state jobs equally open to qualified individuals regardless of gender?
+v2peasbgen,12.84690336318517,Are state business opportunities equally available to qualified individuals or firms regardless of gender?
+v2pepwrgeo,14.5913920362025,Is political power distributed according to urban-rural location?
+v2clgeocl,51.24316445686272,Do those who reside in rural areas enjoy same level of civil liberties as those residing in urban areas?
+v2peapsgeo,21.40251608533693,"Is access to basic public services, such as order and security, primary education, clean water, and healthcare, distributed equally across urban and rural areas?"
+v2peasjgeo,12.314514183573422,Are state jobs equally open to qualified individuals regardless of their rural or urban location?
+v2peasbegeo,13.487023196644728,Are state business opportunities equally available to qualified individuals or firms regardless of their rural or urban locations?
+v2clpolcl,79.64393761730327,"Do members of all political groups enjoy the same level of civil liberties, or are some groups generally in a more favorable position?"
+v2peapspol,37.3509371626576,"Is access to basic public services, such as order and security, primary education, clean water, and healthcare, distributed equally across political groups?"
+v2peasjpol,25.196210577236595,Are state jobs equally open to qualified individuals regardless of their association with a political group?
+v2peasbepol,13.370176116826599,Are state business opportunities equally available to qualified individuals or firms regardless of an individual’s association with a political group?
+v2peasjsoc,11.435197862980772,Are state jobs equally open to qualified individuals regardless of social group?
+v2peasbsoc,10.680862696169513,Are state business opportunities equally available to qualified individuals or firms regardless of social group?
+v2exl_legitideol,16.287978875825832,"To what extent does the current government promote a specific ideology or societal model (an officially codified set of beliefs used to justify a particular set of social, political, and economic relations; for example, socialism, nationalism, religious traditionalism, etc.) in order to justify the regime in place?"
+v2exl_legitlead,22.73050647032511,"To what extent is the Chief Executive portrayed as being endowed with extraordinary personal characteristics and/or leadership skills (e.g. as father or mother of the nation, exceptionally heroic, moral, pious, or wise, or any other extraordinary attribute valued by the society)?"
+v2exl_legitperf,25.49890454996485,"To what extent does the government refer to performance (such as providing economic growth, poverty reduction, effective and non-corrupt governance, and/or providing security) in order to justify the regime in place?"
+v2exl_legitratio,20.587464050319983,To what extent does the current government refer to the legal norms and regulations in order to justify the regime in place?
+v2cacamps,26.913079450568603,"Is society polarized into antagonistic, political camps?"
+v2caviol,43.79589363060769,How often have non-state actors used political violence against persons this year?
+v2caassemb,6484.058813843585,To what extent do state authorities respect and protect the right of peaceful assembly?
+v2cagenmob,24.492423626316832,"In this year, how frequent and large have events of mass mobilization been?"
+v2cademmob,36.43535141133879,"In this year, how frequent and large have events of mass mobilization for pro-democratic aims been?"
+v2caautmob,113.93642713696158,"In this year, how frequent and large have events of mass mobilization for pro-autocratic aims been?"
+v2castate,86.41342230279015,"What share of the population is regularly active in state-administered mass associations, such as women, worker or youth leagues?"
+v2catrauni,58.02079550161574,What share of the population is regularly active in independent trade unions?
+v2capolit,15.843940558380675,"What share of the population is regularly active in independent political interest associations, such as environmental associations, animal rights groups, or LGBT rights groups?"
+v2canonpol,17.791321340467782,"What share of the population is regularly active in independent non-political associations, such as sports clubs, literary societies, charities, fraternal groups, or support groups?"
+v2cafres,46.318757692507255,To what extent are scholars free to develop and pursue their own research and teaching agendas without interference?
+v2cafexch,54.38359225966209,To what extent are scholars free to exchange and communicate research ideas and findings?  
+v2cainsaut,63.081961895152894,To what extent do universities exercise institutional autonomy in practice?     
+v2casurv,3944.702575792708,To what extent are campuses free from politically motivated surveillance or security infringements?
+v2cacritic,47.012438431606334,To what extent do scholars and university students publicly criticize government policies?
+v2edcentcurrlm,13.5985543854963,To what extent does a national authority set the official curriculum framework for schools?
+v2edcenttxbooks,13.77466935737606,What proportion of school textbooks across core subjects does a national authority approve centrally?
+v2edpoledprim,12.78964128450319,Are primary school students required to study at least one subject that predominately focuses on teaching political values?
+v2edpoledsec,12.534653811457284,Are secondary school students required to study at least one subject that predominately focuses on teaching political values?
+v2edpoledrights,15.131207459028673,To what extent does the curriculum of subjects that include the teaching of political values cover topics related to individuals' political rights and duties?
+v2edpatriot,16.662716738075673,How often does the language curriculum promote patriotism?
+v2edideol,14.192123170132179,How often does the history curriculum promote a specific societal model or ideology?
+v2edplural,12.919105439291009,"When historical events are taught, to what extent are students exposed to diverse views and/or interpretations of these events?"
+v2edcritical,24.736231801222402,To what extent do students have opportunities to discuss what they are taught in history classes?
+v2edteautonomy,16.49770755152747,Do history teachers have autonomy to deviate from the content of the official curriculum in the classroom?
+v2medpatriot,21.00608141589441,How often do media outlets promote patriotism?
+v2medentrain,18.903102301779736,Do political authorities have control over the production of entertainment content?
+v2edscextracurr,19.59038631177113,Do schools promote involvement in extracurricular civic and/or political activities?
+v2temonitor,13.277192748169902,Is there a comprehensive monitoring system in place for public authorities to conduct external teacher inspection?
+v2edtehire,14.73846742437091,To what extent are hiring decisions for teachers based on their political views and/or political behavior and/or moral character?
+v2edtefire,14.690063477605037,How likely is it that teachers would be fired if they were to publicly express political views that contradict the dominant political order?
