@@ -1,0 +1,329 @@
+---
+title: "Vdem"
+author: "Lucca"
+date: "2025-01-20"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This code is from of a multiple imputation procedure I did as part of a statistics capstone project with a government agency. The goal was to use VDem's de facto information provided by raters to create visualizations and new classifications of countries' democratic status. If replicating, don't forget to install the vdem package from github, mice, and tidyverse:
+
+```{r}
+#devtools::install_github("vdeminstitute/vdemdata")
+library(tidyverse)
+library(vdemdata)
+
+#read in dataset, using fill_vars to carry foward election specific variables. fill_vars still leaves na values for breaks in electoral regime for election variables. During these times, these variables should be set to a theoretical minimum, but that's not clearly defined when using the Bayesian model latent estimates. Here, we impute these values along with other missing vars.
+
+vdemcsv<-fill_vars()
+
+#rescaleFreedomHouse variable 
+
+vdemcsv$rescaled<-(as.numeric(vdemcsv$e_fh_pr)+as.numeric(vdemcsv$e_fh_cl))/2
+
+#filter out irrelevant variable versions, only interested in Bayesian latent model estimates.
+
+vdemcsv<-vdemcsv[,!(grepl("_osp|_ord|_codelow|_codehigh|_mean|v2x|v3|_sd|_mean",names(vdemcsv)))] 
+
+#isolate number of coders and create NAs for variables without minimum number of coders
+
+coders<-vdemcsv[,grepl("_nr",names(vdemcsv))]
+a<-data.frame(rown=1:length(vdemcsv$country_name))
+for(i in 1:length(names(coders))){
+vect<-pull(coders[,i])
+vect<-ifelse(is.na(vect),0,vect)
+
+
+a[,i]<-as.logical(vect>=1) #Sets minimum number of coders allowable.
+
+names(a)[i]<-substr(names(coders)[i],1,nchar(names(coders)[i])-3)
+}
+
+
+#every variable listed in falseindf has a naming scheme that in some way does not align with the conventions of the rest of the Vdem naming scheme. This is generally because the larger variable is composed of many binary variables. While these dichotomous variables are important, individually they add little information, and they are not intuitive or interesting to visualize. Here we scrap them. 
+
+d<-c()
+for(i in 1:length(names(a))){
+d[i]<-names(a)[i]%in%names(vdemcsv)
+}
+false_indices <- which(!d)
+falseindf<-names(a)[false_indices]
+a<-a[,-false_indices]
+
+#We also do not want to include text variables, or variables whose numerical response is actually indicative of a factor referenced in the codebook. Ex. A response of 5 means "The Military" rather than 5. In effect, we want variables whose responses are either in interval form or converted to interval by the measurement model. 
+
+vartype<-c()
+for(i in 1:length(names(a))){
+vartype[i]<-var_info(names(a)[i])[8]
+}
+vartype<-unlist(vartype)
+vartype<-tolower(vartype)
+a<-a[,grepl("interval",vartype)]
+
+#Some NAs are meant to be set to NA because another variable in the dataset has a certain value. In the Vdem codebook, this information is contained in cleaning details in the format "Set to missing where v2regint is 0." but there is inconsistent language, grammar, and punctuation used in the codebook. We want to clean the codebook entries to isolate the variable name that needs to be checked (eg. v2regint in the above example) and the value that it needs to be checked for (eg. 0). Here I handle this with a regular expression.
+
+ordering<-c()
+cleaning<-c()
+for(i in 1:length(names(a))){
+cleaning[i]<-var_info(names(a)[i])[9]
+}
+cleaning<-unlist(cleaning)
+a<-a[,is.na(cleaning)]
+```
+
+Now we want to reconstruct the Vdem dataset, with NAs for variables with insufficient coders and only the columns of interest and country-year combos. 
+
+```{r}
+#We add back in population and gdp per capita as controls for our imputation process. Assumption is that data is missing at random after controlling for these factors. This is probably a faulty assumption given what we know about the Vdem.
+
+slim<-data.frame(country_id=vdemcsv$country_id,e_pop=vdemcsv$e_pop,e_gdppc=vdemcsv$e_gdppc,rescaled=vdemcsv$rescaled,year=vdemcsv$year)
+for(i in 1:length(names(a))){
+ayy<-pull(vdemcsv[,names(vdemcsv)%in%names(a)[i]])
+Bee<-a[,i]
+vdemcsv[,names(vdemcsv)==names(a)[i]]<-ifelse(Bee==FALSE,NA,ayy)
+}
+slimlength<-length(slim)
+for(i in 1:length(names(a))){
+slim[,i+slimlength]<-pull(vdemcsv[,names(vdemcsv)%in%names(a)[i]])
+names(slim)[i+slimlength]<-names(a)[i]
+}
+
+
+
+#filter for after 1972
+
+slim<-slim[slim$year>=1972&slim$year<=2023,]
+vdemcsv<-vdemcsv[vdemcsv$year>=1972&vdemcsv$year<=2023,]
+
+
+#removing variables with convergence issues for country date latent trait estimates v2smgovsmalt v2smforads v2caconmob v2peapssoc
+
+badvariables<-c("v2smgovsmalt","v2smforads", "v2caconmob", "v2peapssoc")
+slim<-slim[,!(names(slim)%in%badvariables)]
+
+```
+
+```{r}
+country_id<-slim$country_id
+slim<-slim[,2:length(slim)]
+#need to create a dataframe for the where" argument in mice so we don't impute for NAs by design.
+wheredf<-is.na(slim)
+notapplic<-data.frame(variablename=colnames(wheredf),numberofNAs=apply(wheredf,2,function(x) sum((x))))
+wheredf<-wheredf[,!notapplic$numberofNAs>1000]
+slim<-slim[,notapplic$numberofNAs<=1000]
+```
+
+```{r}
+#created a list with maximum and minimum bounds for the imputation process
+boundsdf1<-data.frame(names=names(slim)[5:length(slim)],min=rep(-5,length.out=(length(slim)-4)),max=rep(5,length.out=(length(slim)-4)))
+exceptions<-ifelse(sapply(slim[,c(5:length(slim))],function(x) max(x,na.rm=T))>5,TRUE,FALSE)
+boundsdf1$max<-ifelse(exceptions==TRUE,100,5)
+boundsdf1$min<-ifelse(exceptions==TRUE,0,-5)
+boundsdf1 <- add_row(boundsdf1, names="rescaled", min = 1, max=7, .before = 1)
+boundsdfpivot<-t(boundsdf1[,2:3])
+colnames(boundsdfpivot)<-boundsdf1$names
+boundsdfpivot<-data.frame(boundsdfpivot)
+boundsdf<-as.list(boundsdfpivot)
+```
+
+Begin imputation, be aware it takes several minutes. 
+```{r}
+#imputation 
+library(mice)
+library(miceadds)
+#Any character variables used in MICE must be made factors first.
+imputationstation<- mice(slim, m=3, maxit = 3,where=wheredf, bounds=boundsdf,print =  TRUE,seed=42)
+```
+
+```{r}
+#the mice function takes a "seed argument" if the procedure requires exact replicability
+#save the imputed dataframes as a long form csv
+newimpute <- complete(imputationstation, action="long", include = TRUE)
+newimpute$country_id<-rep(country_id,times=4)
+namesdf<-fill_vars()
+namesdf<-namesdf[match(unique(as.factor(namesdf$country_id)),as.factor(namesdf$country_id)),]
+namesdf<-namesdf[,c(1:3)]
+newimpute<-left_join(newimpute,namesdf,join_by("country_id"=="country_id"))
+
+#when reloading saved longform data, use as.mids() to convert back to multiple imputed dataset format for analysis
+#created a list with maximum and minimum bounds for the imputation process
+
+write_csv(newimpute,"fixedimputed.csv")
+
+finaldataset<-read_csv("fixedimputed.csv")
+library(mice)
+
+finaldataset<-newimpute
+aggregatedataset<-finaldataset[finaldataset$.imp>0,]
+aggregateddataset<-aggregatedataset %>%
+  group_by(aggregatedataset$.id) %>%
+  summarize(
+    across(where(is.numeric), mean
+  ))
+
+write_csv(aggregatedataset,"singleaggregateddataset.csv")
+singleag<-read_csv("singleaggregateddataset.csv")
+
+singleag
+
+```
+
+```{r}
+library(randomForest)
+# Initialize an empty list to store models
+rf_models <- list()
+
+imputationstation$m
+# Loop over each imputed dataset
+for (i in 1:imputationstation$m) {
+  
+  # Extract the complete dataset for the ith imputed dataset
+  complete_data <- complete(imputationstation, action = i)
+  
+  # Define the predictor matrix (X) and the dependent variable (y)
+  X <- complete_data[, -3]  # All columns except the last (assumed dependent variable)
+  y <- complete_data[, 3]   # Last column (dependent variable)
+  
+  # Train a Random Forest model
+  rf_model <- randomForest(X, y)
+  
+  # Store the model in the list
+  rf_models[[i]] <- rf_model
+}
+```
+
+```{r}
+exampledata <- complete(imputationstation, action = 1)
+
+# Initialize an empty matrix to store variable importance
+variable_importance <- matrix(0, nrow = ncol(X), ncol = imputationstation$m)
+
+# Extract variable importance from each Random Forest model
+for (i in 1:imputationstation$m) {
+  rf_model <- rf_models[[i]]
+  variable_importance[, i] <- rf_model$importance[, 1]  # First column contains MeanDecreaseGini
+}
+
+# Average the importance scores across the imputed models
+average_importance <- rowMeans(variable_importance)
+
+# Print the average importance
+names(exampledata)
+print(average_importance)
+importance<-data.frame(varname=names(exampledata)[-3],importance=average_importance)
+questions<-c()
+for(i in 1:length(importance$varname)){
+questions[i]<-unlist(var_info(importance$varname[i])[5])
+}
+importance$question<-questions
+write_csv(importance,"importance.csv")
+
+importance<-importance[order(importance$importance,decreasing=TRUE),]
+
+importance2<-importance[c(1:14),]
+```
+
+```{r}
+whatt<-newimpute[,names(newimpute)%in%c("rescaled","year",".imp",".id","country_id","country_name","country_text_id",importance2$varname)]
+whatt[,importance2$varname]<-scale(whatt[,importance2$varname])
+whatt$rights<-whatt$v2caassemb+whatt$v2casurv+whatt$v2cldiscm+whatt$v2clacjstm+whatt$v2clacjstw
+whatt$parties<-whatt$v2psoppaut+whatt$v2psbars+whatt$v2elembaut+whatt$v2psparban
+whatt$mediacso<-whatt$v2cseeorgs+whatt$v2mecenefm+whatt$v2mebias+whatt$v2meharjrn+whatt$v2mecrit
+whatt2 <- whatt %>%
+  mutate(across(
+    all_of(c("rights", "parties", "mediacso")),
+    ~ 1 + 9 * (. - min(.,na.rm=T)) / (max(.,na.rm=T) - min(.,na.rm=T)),
+    .names = "{.col}_scaled"
+  ))
+whatt3<-whatt2[whatt2$.imp>0,]
+whatt3<-whatt3 %>%
+  group_by(whatt3$.id) %>%
+  summarize(
+    across(where(is.numeric), mean
+  ))
+
+write_csv(whatt2,"withnewindices.csv")
+write_csv(whatt3,"singleagwithnewindices.csv")
+
+```
+
+```{r}
+set.seed(157)  # for reproducibility
+truedata<-whatt2[whatt2$.imp==0,]
+sample_size <- floor(0.5 * nrow(truedata))
+train_indices <- sample(seq_len(nrow(truedata)), size = sample_size)
+train_data <- truedata[train_indices, ]
+test_data  <- truedata[-train_indices, ]
+trainmodel <- lm(rescaled~rights_scaled+parties_scaled+mediacso_scaled, data = train_data)
+predictions <- predict(trainmodel, newdata = test_data)
+actuals <- test_data$rescaled
+valid_idx <- !is.na(predictions) & !is.na(actuals)
+```
+
+
+rmse <- sqrt(mean((predictions[valid_idx] - actuals[valid_idx])^2))
+print(paste("RMSE:", round(rmse, 4)))
+
+clip <- function(x, lower = 1, upper = 7) {
+  pmin(pmax(x, lower), upper)
+}
+clipped_predictions <- clip(predictions)
+
+valid_idx <- !is.na(clipped_predictions) & !is.na(actuals)
+rmse_clipped <- sqrt(mean((clipped_predictions[valid_idx] - actuals[valid_idx])^2))
+print(paste("Clipped RMSE:", round(rmse_clipped, 4)))
+qqnorm(trainmodel$residuals)
+res<-trainmodel$residuals
+plot(fitted(trainmodel),res)+abline(0,0)
+
+```{r}
+round_to_half <- function(x) {
+  round(x * 2) / 2
+}
+rounded_predictions <- round_to_half(predictions)
+clipped_predictions <- clip(rounded_predictions)
+valid_idx <- !is.na(clipped_predictions) & !is.na(actuals)
+
+preds <- clipped_predictions[valid_idx]
+acts <- actuals[valid_idx]
+
+# Calculate accuracy with a tolerance of ±0.5
+tolerance <- 0.5
+close_enough <- abs(preds - acts) <= tolerance
+tolerance_accuracy <- mean(close_enough)
+
+# Print result
+
+matches <- clipped_predictions[valid_idx] == actuals[valid_idx]
+accuracy <- mean(matches)
+
+print(paste("Exact match accuracy:", round(accuracy * 100, 2), "%"))
+
+
+print(paste("Accuracy within ±0.5:", round(tolerance_accuracy * 100, 2), "%"))
+
+tolerance2 <- 1
+close_enough2 <- abs(preds - acts) <= tolerance2
+tolerance_accuracy2<- mean(close_enough2)
+
+print(paste("Accuracy within ±1:", round(tolerance_accuracy2 * 100, 2), "%"))
+
+```
+
+
+
+names(singleag)
+questions<-c()
+for(i in 1:232){
+questions[i]<-var_info(names(singleag)[i])[]
+}
+questions<-unlist(questions)
+write_csv(data.frame(variable=names(singleag),question=c(questions,rep(NA,diff(c(232,length(names(singleag)))))))
+,"questions.csv")
